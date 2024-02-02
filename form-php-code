@@ -1,0 +1,159 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+session_start();
+require_once('../config.php');
+
+$select = "SELECT * FROM `application` ORDER BY id DESC LIMIT 1";
+$select_run = mysqli_query($con, $select);
+
+if (mysqli_num_rows($select_run) > 0) {
+
+    if ($row = mysqli_fetch_assoc($select_run)) {
+
+        if (isset($_POST['submit'])) 
+        {
+
+            $name = mysqli_real_escape_string($con, $_POST['name']);
+            $fname = mysqli_real_escape_string($con, $_POST['fname']);
+            $email = mysqli_real_escape_string($con, $_POST['email']);
+            $dob = mysqli_real_escape_string($con, $_POST['dob']);
+            $gender = mysqli_real_escape_string($con, $_POST['gender']);
+            $category = mysqli_real_escape_string($con, $_POST['category']);
+            $phone = mysqli_real_escape_string($con, $_POST['phone']);
+            $state = mysqli_real_escape_string($con, $_POST['state']);
+            $district = mysqli_real_escape_string($con, $_POST['district']);
+            $block = mysqli_real_escape_string($con, $_POST['block']);
+            $zip = mysqli_real_escape_string($con, $_POST['zip']);
+            $aadhar = mysqli_real_escape_string($con, $_POST['aadhar']);
+            $account_no = mysqli_real_escape_string($con, $_POST['account_no']);
+            $bank_name = mysqli_real_escape_string($con, $_POST['bank_name']);
+            $branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
+            $eq = mysqli_real_escape_string($con, $_POST['eq']);
+            $ifsc_code = mysqli_real_escape_string($con, $_POST['ifsc_code']);
+            $tc = isset($_POST['t_c']) ? 'Agreed' : 'Not agreed';
+
+            $currentMonth = date('M');
+            // $currentMonth = "mar";
+            //echo 'Current Month: ' . $currentMonth;
+            $form_no = $currentMonth . '01';
+
+                    $user_id = $row['form_no'];
+                    $getnumber = str_replace($currentMonth, "", $user_id);
+                    $id_increase = intval($getnumber) + 1;
+                    $get_string = str_pad($id_increase, 2,0, STR_PAD_LEFT);
+                    $id= $currentMonth.$get_string;
+        
+                    $photo = basename($_FILES['photo']['name']);
+
+                    $temp = date("d-m-y")."-";
+                    $newimage = $temp.rand(99,00).$photo;
+                
+                    $folder = "../application_photo/";
+                
+                    $image1 = $folder . $newimage;
+        
+            $check_file_type1 = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            if ($check_file_type1 == "jpg" || $check_file_type1 == "png" || $check_file_type1 == "jpeg") {
+        
+                $max_size =  1024 * 1024; // 1MB 
+                //check image size
+                if ($_FILES["photo"]["size"] <= $max_size) {
+        
+                    $sql = "INSERT INTO `application`(`form_no`,`name`, `father_name`, `email`, `dob`, `gender`, `category`, `phone`,`photo`, `state`,
+                 `district`, `block`, `zip`, `aadhar`,`bank_name`,`branch_name`, `account_no`, `ifsc_code`,`eq`, `tc`)
+                    VALUES ('$id','$name', '$fname', '$email', '$dob', '$gender', '$category', '$phone','$newimage', '$state', 
+                    '$district', '$block', '$zip', '$aadhar','$bank_name','$branch_name', '$account_no', '$ifsc_code','$eq','$tc')";
+                        move_uploaded_file($_FILES['photo']['tmp_name'], $image1);
+            $sql_run =mysqli_query($con, $sql);
+            if ($sql_run) {
+                        $_SESSION['message'] = "Application submitted successfully.";
+                        header('Location: ../application.php');
+                        exit();
+                    } else {
+        
+                        echo "Error: " . $sql . "<br>" . $con->error;
+                    }
+                } else {
+                    $_SESSION['error'] = "Sorry, your file is too large. Please upload an image of size 1MB or less.";
+                    header("location:../application.php");
+                    exit();
+                }
+            } else {
+                $_SESSION['error'] = "Sorry, only JPG, JPEG, and PNG files are allowed..!";
+                header("location:../application.php");
+                exit();
+            }
+        }
+    }
+} else if (isset($_POST['submit'])) {
+
+    $currentMonth = date('M');
+    //echo 'Current Month: ' . $currentMonth;
+    $form_no = $currentMonth . '01';
+    // Get form data
+    $name = mysqli_real_escape_string($con, $_POST['name']);
+    $fname = mysqli_real_escape_string($con, $_POST['fname']);
+    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $dob = mysqli_real_escape_string($con, $_POST['dob']);
+    $gender = mysqli_real_escape_string($con, $_POST['gender']);
+    $category = mysqli_real_escape_string($con, $_POST['category']);
+    $phone = mysqli_real_escape_string($con, $_POST['phone']);
+    $state = mysqli_real_escape_string($con, $_POST['state']);
+    $district = mysqli_real_escape_string($con, $_POST['district']);
+    $block = mysqli_real_escape_string($con, $_POST['block']);
+    $zip = mysqli_real_escape_string($con, $_POST['zip']);
+    $aadhar = mysqli_real_escape_string($con, $_POST['aadhar']);
+    $account_no = mysqli_real_escape_string($con, $_POST['account_no']);
+    $bank_name = mysqli_real_escape_string($con, $_POST['bank_name']);
+    $branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
+    $eq = mysqli_real_escape_string($con, $_POST['eq']);
+    $ifsc_code = mysqli_real_escape_string($con, $_POST['ifsc_code']);
+    $tc = isset($_POST['t_c']) ? 'Agreed' : 'Not agreed';
+
+    $photo = basename($_FILES['photo']['name']);
+
+    $temp = date("d-m-y")."-";
+    $newimage = $temp.rand(99,00).$photo;
+
+    $folder = "../application_photo/";
+
+    $image1 = $folder . $newimage;
+
+$check_file_type1 = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+if ($check_file_type1 == "jpg" || $check_file_type1 == "png" || $check_file_type1 == "jpeg") {
+
+$max_size =  1024 * 1024; // 1MB 
+//check image size
+if ($_FILES["photo"]["size"] <= $max_size) {
+
+            $sql = "INSERT INTO `application`(`form_no`,`name`, `father_name`, `email`, `dob`, `gender`, `category`, `phone`,`photo`, `state`,
+         `district`, `block`, `zip`, `aadhar`,`bank_name`,`branch_name`, `account_no`, `ifsc_code`,`eq`, `tc`)
+            VALUES ('$form_no','$name', '$fname', '$email', '$dob', '$gender', '$category', '$phone','$newimage', '$state', 
+            '$district', '$block', '$zip', '$aadhar','$bank_name','$branch_name', '$account_no', '$ifsc_code','$eq','$tc')";
+             move_uploaded_file($_FILES['photo']['tmp_name'], $image1);
+            $sql_run =mysqli_query($con, $sql);
+            if ($sql_run) {
+                $_SESSION['message'] = "Application submitted successfully.";
+                header('Location: ../application.php');
+                exit();
+            } else {
+
+                $_SESSION['error'] = "Something went wrong...";
+            header("location:../application.php");
+            exit();
+            }
+        } else {
+            $_SESSION['error'] = "Sorry, your file is too large. Please upload an image of size 1MB or less.";
+            header("location:../application.php");
+            exit();
+        }
+    } else {
+        $_SESSION['error'] = "Sorry, only JPG, JPEG, and PNG files are allowed..!";
+        header("location:../application.php");
+        exit();
+    }
+ } 
+
+?>
