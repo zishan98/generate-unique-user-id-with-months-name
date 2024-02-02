@@ -4,7 +4,6 @@
                     <!-- <h2 class="text-center text-info">Register</h2> -->
                     <img src="assets/img/logo_color.png" alt="">
                 </div>
-
                 <div class="col-sm-12 mb-4">
                     <h5>
                     <?php if (isset($_SESSION['error'])) { ?>
